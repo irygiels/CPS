@@ -8,13 +8,12 @@ org = x;
 sp = 1.1e4:1.16e4; 
 d = 1e4:1.06e4; 
 nd = 3.95e4:4.05e4; 
-
+figure(1)
 hold on;
 plot(x); title('speech signal');
 plot(x(nd), 'r');
 plot(x(d), 'g');
 plot(x(sp), 'm');
-hold off;
 % pause;
 
 %spectral densities
@@ -48,6 +47,7 @@ bs=zeros(1,Np);
 Nframes=floor((N-Mlen)/Mstep+1);	
 
 x=filter([1 -0.9735], 1, x);	%pre-emphasis
+figure(2)
 plot(d, org(d), d, x(d), 'r');
 
 for  nr = 1 : Nframes
@@ -72,9 +72,9 @@ for  nr = 1 : Nframes
     for k = 0 : Mlen-1
         r(k+1) = sum( bx(1 : Mlen - k).* bx(1+k : Mlen)); %autocorrelation
     end
-    
-    %plot(n,bx); title('speech signal fragment');
-    %plot(r); title('speech signal fragment autocorr');
+    figure(3)
+    subplot(2,1,1); plot(n,bx); title('speech signal fragment');
+    subplot(2,1,2); plot(r); title('speech signal fragment autocorr');
     
     offset=20; rmax=max( r(offset : Mlen) ); %max of autocorr	  
     imax=find(r==rmax); %index of autocorr max
@@ -105,7 +105,8 @@ for  nr = 1 : Nframes
     s = [s ss];						
 end
 s=filter(1,[1 -0.9735],s); % de-emphasis
-%plot(s); title('speech synthesis'); pause
-%soundsc(s, fpr); pause
-%soundsc(x,fpr);	
+figure(4)
+plot(s); title('speech synthesis');
+soundsc(s, fpr);
+%soundsc(x,fpr);
 
