@@ -41,12 +41,6 @@ Mstep=180;      %time shift
 Np=10;          %prediction filter
 pos=Mstep+1;    %initial position
 
-%quantization
-
-quant8 = -1.9:3.8/(2^7-1):1.9;
-quant6 = -1.2:2.4/(2^7-1):1.2;
-quant4 = -0.6:1.2/(2^7-1):0.6;
-
 lpc=[];								 
 s=[]; %speech synthesis (all fragments)								
 ss=[]; %speech synthesis (one fragment)								  
