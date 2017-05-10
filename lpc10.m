@@ -1,21 +1,20 @@
 clear all; clf;
 
-[x,fpr,Nbits]=audioread('mowa.wav');	
+[x,fpr]=audioread('mowa1.wav');	
 plot(x); title('sygnal mowy'); pause
-soundsc(x,fpr);								
+soundsc(x,fpr);	
 
 N=length(x);	
 Mlen=240;		 
 Mstep=180;		 
 Np=10;			 
-gdzie=Mstep+1;	  
+gdzie=Mstep+1;	 
 
 lpc=[];								 
 s=[];								
 ss=[];								  
 bs=zeros(1,Np);
 Nramek=floor((N-Mlen)/Mstep+1);	
-
 for  nr = 1 : Nramek
     
     n = 1+(nr-1)*Mstep : Mlen + (nr-1)*Mstep;
@@ -25,7 +24,6 @@ for  nr = 1 : Nramek
     for k = 0 : Mlen-1
         r(k+1) = sum( bx(1 : Mlen - k).* bx(1+k : Mlen));
     end
-    
     
     offset=20; rmax=max( r(offset : Mlen) );	  
     imax=find(r==rmax);
@@ -37,7 +35,6 @@ for  nr = 1 : Nramek
     end
     a=-inv(R)*rr;											
     wzm=r(1)+r(2:Np+1)*a;									
-    H=freqz(1,[1;a]);										
     if (T~=0) gdzie=gdzie-Mstep; end					
     for n=1:Mstep
         if( T==0)
