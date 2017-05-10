@@ -5,10 +5,9 @@ clf;
 [x,fpr]=audioread('mowa1.wav');	
 
 org = x;
-n = 1.1e4: 1.2e4; 
+n = 1.1e4:1.2e4; 
 d = 1e4:1.1e4; 
 
-%wyswietl na wykresie
 hold on;
 plot(x); title('speech signal');
 plot(x(n), 'r');
@@ -16,11 +15,28 @@ plot(x(d), 'g');
 hold off;
 % pause;
 
-N=length(x);	 %signal length
-Mlen=240;		 %hamming window length
-Mstep=180;		 %time shift
-Np=10;			 %prediction filter
-pos=Mstep+1;	 %initial position
+%spectral densities
+
+%comment: if x is a signal then its spectral density is equal to fft of its
+%autocorrelation
+sp_den_n=fft(xcorr(x(n),x(n)))
+%plot(abs(sp_den_n))
+%plot(10*log10(abs(sp_den_n))
+sp_den_d=fft(xcorr(x(d),x(d)))
+
+%spectrum - a general formula
+%Fs = fpr; 
+%t = 0:1/Fs:1-1/Fs; 
+%Y=fft(x); 
+%W=(abs(Y)).^2; 
+%Z=10*log10(W); 
+%plot(Z) 
+
+N=length(x);    %signal length
+Mlen=240;       %hamming window length
+Mstep=180;      %time shift
+Np=10;          %prediction filter
+pos=Mstep+1;    %initial position
 
 lpc=[];								 
 s=[];								
