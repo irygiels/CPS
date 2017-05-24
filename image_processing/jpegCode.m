@@ -1,4 +1,4 @@
-function bits = jpegCode( img, q )
+function [bits, idxs] = jpegCode( img, q )
 %http://etacar.put.poznan.pl/marcin.kielczewski/SWwR6.pdf
 bits = [];
 [ xi, yi ] = size( img );
@@ -8,7 +8,7 @@ for x = 1:8:xi
         blok = img( x:x+7, y:y+7 );
         dblok = DCT8x8( blok );         % realizacja dyskretnej transformaty kosinusowej
         qblok = kwant( dblok, q );      % kwantyzacja wspolczynnikow transformaty DCT
-        zblok = ZigZag( qblok );        % rozwijanie bloku 8x8 do wektora 64x1 lgorytmem Zig-Zag
+        [zblok, idxs] = ZigZag( qblok );        % rozwijanie bloku 8x8 do wektora 64x1 lgorytmem Zig-Zag
         [DCnew, pair] = RLE( zblok );   % tworzenie ,,par'' lgorytmem RLE
         bDC = VLCDC( DC-DCnew );        % kodowanie DC do bitow algorytmem VLC
         DC=DCnew;
@@ -37,7 +37,7 @@ function y = kwant( x, q )
 y=floor(x/q + 0.5);
 end
 
-function y = ZigZag( x )
+function [y, idxs] = ZigZag( x )
 % x: blok 8x8 skwantowanych wspolczynnikow DCT
 % y: przeksztalcenie x do wektora 64x1 algorytem ZigZag
 y=zeros(64,1);
@@ -67,7 +67,8 @@ for i=1:15
             step=step+1;
         end
     end  
-end    
+end
+idxs = arrayfun(@(a)find(y==a,1),x);
 end
 
 function [ DC, y ] = RLE( x )
