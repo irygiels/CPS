@@ -1,4 +1,4 @@
-function y = ortogonal_transform ( image , treshold )
+function y = ortogonal_transform ( image , threshold )
 
 A = imread(image);
 J = dct2(A);
@@ -8,8 +8,8 @@ imshow(log(abs(J)),[])
 colormap(gca,jet(64))
 colorbar
 
-%if magnitude < treshold then 0
-J(abs(J) < treshold) = 0; 
+%if magnitude < threshold then 0
+J(abs(J) < threshold) = 0; 
 K = idct2(J);
 
 %display the original image alongside the processed image

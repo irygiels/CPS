@@ -24,8 +24,7 @@ bits = [ bq'; bx'; by'; bits ];         % dolaczenie na poczatku strumienia doda
 end
 
 function y = DCT8x8( x )
-y = x*dctmtx(8)*x';
-% y=dct2(x);
+y=dct2(x);
 % x: blok 8x8 pix
 % y: blok 8x8 pix po transformacie DCT
 end
