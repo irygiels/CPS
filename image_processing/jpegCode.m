@@ -1,5 +1,5 @@
-function [bits, idxs] = jpegCode( img, q )
-%http://etacar.put.poznan.pl/marcin.kielczewski/SWwR6.pdf
+function [bits, idxs] = jpegCode(img,q)
+
 bits = [];
 [ xi, yi ] = size( img );
 DC = 0;
@@ -8,7 +8,7 @@ for x = 1:8:xi
         blok = img( x:x+7, y:y+7 );
         dblok = DCT8x8( blok );         % realizacja dyskretnej transformaty kosinusowej
         qblok = kwant( dblok, q );      % kwantyzacja wspolczynnikow transformaty DCT
-        [zblok, idxs] = ZigZag( qblok );        % rozwijanie bloku 8x8 do wektora 64x1 lgorytmem Zig-Zag
+        zblok = ZigZag( qblok );        % rozwijanie bloku 8x8 do wektora 64x1 lgorytmem Zig-Zag
         [DCnew, pair] = RLE( zblok );   % tworzenie ,,par'' lgorytmem RLE
         bDC = VLCDC( DC-DCnew );        % kodowanie DC do bitow algorytmem VLC
         DC=DCnew;
@@ -21,60 +21,32 @@ bq = double( dec2bin( q, 16 ) ) - 48;   % zakoduj wspolczynnik kompresji na16 bi
 bx = double( dec2bin( floor(x/8)*8, 16 ) ) - 48; % zakoduj szerokosc obrazka na 16 bitach
 by = double( dec2bin( floor(y/8)*8, 16 ) ) - 48; % zakoduj wysokosc obrazka na 16 bitach
 bits = [ bq'; bx'; by'; bits ];         % dolaczenie na poczatku strumienia dodatkowe dane niezbedne dla dekodera
-end
+
 
 function y = DCT8x8( x )
-y=dct2(x);
 % x: blok 8x8 pix
 % y: blok 8x8 pix po transformacie DCT
-end
+y=dct2(x);
 
 function y = kwant( x, q )
 % x: blok 8x8 wspolczynnikow transformaty DCT
 % q: wspolczynnik kwantyzacji
 % y: skwantowane wspolczynniki x
-y=floor(x/q + 0.5);
-end
+y=floor((x/q)+0.5);
 
-function [y, idxs] = ZigZag( x )
+
+function y = ZigZag( x )
 % x: blok 8x8 skwantowanych wspolczynnikow DCT
 % y: przeksztalcenie x do wektora 64x1 algorytem ZigZag
-y=zeros(64,1);
-for i=1:15
-    step = 0;
-    if i<9
-        start = 1+(i-1)*i/2;
-        fin = 1+(i+2)*(i-1)/2;
-        for j=start:fin
-            if mod(i,2)==0
-                y(j)=x(1+step,i-step);
-            else
-                y(j)=x(i-step,1+step);
-            end
-            step=step+1;
-        end
-    else 
-        start = fin+1;
-        nr_iter=16-i;
-        fin = fin + nr_iter;
-        for j=start:fin
-            if mod(i,2)==1
-                y(j)=x(8-step,i-7+step);
-            else
-                y(j)=x(i-7+step,8-step);
-            end
-            step=step+1;
-        end
-    end  
-end
-idxs = arrayfun(@(a)find(y==a,1),x);
-end
+zigg=[1 9 2 3 10 17 25 18 11 4 5 12 19 26 33 41 34 27 20 13 6 7 14 21 28 35 42 49 57 50 43 36 29 22 15 8 16 23 30 37 44 51 58 59 52 45 38 31 24 32 39 46 53 60 61 54 47 40 48 55 62 63 56 64];
+y=x(zigg);
 
 function [ DC, y ] = RLE( x )
 % x: skwantowane wspolczynniki w formacie wektora o wymiarach 64x1
 % DC: wyliczona wartosc DC z biezacej ramki
 % y: wyznaczone ,,pary'' w formacie Nx2 gdzie N oznacza ilosc par (kazdy wiersz to jedna para)
 %      ilosc par w konkretnym bloku 8x8 zalezy od danych danych wejsciowych
+
 y = [];
 DC = x(1);
 
@@ -104,7 +76,7 @@ end
 if( x(64) == 0 )
     y = [ y ;[0,0] ];
 end
-end
+
 
 function y = VLCDC( x )
 % x: wspolczynnik DC
@@ -112,7 +84,6 @@ function y = VLCDC( x )
 %     strumien bitowy ma byc w formacie wektora Nx1 gdzie N oznacza liczbe
 %     bitow, kazdy element wektora moze przyjmowac wartosc ,,0'' lub ,,1'',
 %     wektor moze byc typu ,,double''
-
 
 if( x == 0 )
     y = [ 0, 0, 0, 0 ]';
@@ -124,7 +95,6 @@ else
     end
     blb = double( dec2bin( lb,4) ) - 48;
     y = [ blb, b ]';
-end
 end
 
 function y = VLC( x )
@@ -154,5 +124,4 @@ for i=1:xx
         tmp = [ xxxx, blb, b ]';
     end
     y = [y; tmp];
-end
 end
